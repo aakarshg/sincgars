@@ -1,9 +1,4 @@
 #!/usr/bin/env bash
-
-CLUSTER_NAME=${1}
-REMOTE_URL=${2}
-
-
 echo "Checking if a configmap already exists"
 configmap=$(oc -n openshift-monitoring get configmap | grep cluster-monitoring-config -i -c)
 if [ $configmap -gt 0 ]; then
@@ -12,6 +7,6 @@ else
   create=$(oc -n openshift-monitoring create configmap cluster-monitoring-config)
   echo "no configmap exists so creating it exited with ${create}"
 fi
-sed -i "s|        placeholder_label*|        \"clustername\": \"${CLUSTER_NAME}\"|" placeholder.yaml
-sed -i "s|        placeholder_url*|        -  url: \"${REMOTE_URL}\"|" placeholder.yaml
-oc patch configmap/cluster-monitoring-config -n openshift-monitoring --patch "$(cat placeholder.yaml)"
+sed "s|        placeholder_label*|        \"clustername\": \"${1}\"|" placeholder.yaml > .remote_write.yaml
+sed "s|        placeholder_url*|        -  url: \"${2}\"|" placeholder.yaml > .remote_write.yaml
+oc patch configmap/cluster-monitoring-config -n openshift-monitoring --patch "$(cat .remote_write.yaml)"
