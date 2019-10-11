@@ -1,7 +1,0 @@
-data:
-  config.yaml: |
-    prometheusK8s:
-      externalLabels:
-        placeholder_label
-      remoteWrite:
-        placeholder_url
